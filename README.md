@@ -29,7 +29,7 @@ http_archive(
     sha256 = SMITHY_RULES_SHA
 )
 
-load("@smithy_rules//smithy:smithy.bzl"", "smithy_cli_init")
+load("@smithy_rules//smithy:smithy.bzl", "smithy_cli_init")
 smithy_cli_init()
 ```
 
