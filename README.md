@@ -2,7 +2,7 @@
 
 <p align="center">
 <!--Git Hub Action Badges-->
-<a href="https://github.com/mellemahp/contextual-auth-service/actions"><img alt="Actions Status" src="https://github.com/mellemahp/smithy-bazel-rules/actions/workflows/bazel.yml/badge.svg"></a>
+<a href="https://github.com/mellemahp/smithy-bazel-rules/actions"><img alt="Actions Status" src="https://github.com/mellemahp/smithy-bazel-rules/actions/workflows/bazel.yml/badge.svg"></a>
 </p>
 
 ---
