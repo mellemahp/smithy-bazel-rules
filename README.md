@@ -65,7 +65,8 @@ The output of the `smithy_openapi` rule is an openapi specification that can be 
 The Smithy library build rule is also provided by this package. This library rule packages smithy outputs as a Jar that can be depended on by other smithy packages. For example, you could use the Smithy library rule to package a common set of dependecies (such as common types definitions) for re-use by other Smithy models.
 
 To create a smithy library add the Following to your `BUILD` file:
-```
+```starlark
+
 load("@smithy_rules//smithy:smithy.bzl", "smithy_library")
 
 filegroup(
