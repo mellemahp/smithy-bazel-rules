@@ -1,0 +1,10 @@
+#####################
+### BUILD OPTIONS ###
+#####################
+build --symlink_prefix=dist/ --worker_sandboxing
+
+# Performance: avoid stat'ing input files
+build --watchfs
+
+# https://docs.bazel.build/versions/master/command-line-reference.html#build-options
+build --local_termination_grace_seconds=3

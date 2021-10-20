@@ -1,0 +1,15 @@
+{
+    "version": "1.0",
+    "projections": {
+        "model": {
+            "plugins": {
+                "openapi": {
+                    "service": "example.weather#Weather",
+                    "protocol": "aws.protocols#restJson1",
+                    "useJsonName": true,
+                    "keepUnusedComponents": true
+                }
+            }
+        }
+    }
+}
