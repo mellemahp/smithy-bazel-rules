@@ -11,4 +11,4 @@ jobs:
         with:
           bazel-version: "4.0.0"
       - name: Build all test targets
-        run: bazel test //test:all
+        run: bazel build //test:all
