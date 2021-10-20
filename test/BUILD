@@ -14,13 +14,11 @@ filegroup(
 
 smithy_openapi(
     name = "smithy_openapi_build_test",
-    srcs = [
-        ":model_files",
-        ":smithy_library_build_test",
-    ],
+    srcs = [":model_files"],
     config = "smithy-build.json",
     projection = "model",
     service_name = "Weather",
+    deps = [":smithy_library_build_test"],
 )
 
 filegroup(

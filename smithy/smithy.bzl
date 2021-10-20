@@ -147,10 +147,10 @@ smithy_openapi = rule(
         ),
 
         # downstream dependencies
-        "deps": attr.label_list(),
+        "deps": attr.label_list(allow_files = True),
 
         # smithy source files
-        "srcs": attr.label_list(),
+        "srcs": attr.label_list(allow_files = True),
 
         # smithy-build config json file
         "config": attr.label(
@@ -251,10 +251,10 @@ smithy_source = rule(
         ),
 
         # downstream dependencies
-        "deps": attr.label_list(),
+        "deps": attr.label_list(allow_files = True),
 
         # smithy source files
-        "srcs": attr.label_list(),
+        "srcs": attr.label_list(allow_files = True),
 
         # smithy-build config json file
         "config": attr.label(
