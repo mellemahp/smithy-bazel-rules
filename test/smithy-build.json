@@ -6,10 +6,16 @@
                 "openapi": {
                     "service": "example.weather#Weather",
                     "protocol": "aws.protocols#restJson1",
-                    "useJsonName": true,
-                    "keepUnusedComponents": true
+                    "keepUnusedComponents": true,
+                    "useIntegerType": true
                 }
-            }
+            },
+            "transforms": [
+                {
+                    "name": "removeUnusedShapes",
+                    "args": {}
+                }
+            ]
         }
     }
 }

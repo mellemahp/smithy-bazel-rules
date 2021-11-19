@@ -30,8 +30,8 @@ string CityId
 operation GetCity {
     input: GetCityRequest,
     output: GetCityResponse,
-    errors: [NoSuchResource]
-}
+    errors: [NoSuchResourceException]
+} 
 
 structure GetCityRequest {
     // "cityId" provides the identifier for the resource and
@@ -63,7 +63,8 @@ structure CityCoordinates {
 // "error" is a trait that is used to specialize
 // a structure as an error.
 @error("client")
-structure NoSuchResource {
+@httpError(404)
+structure NoSuchResourceException {
     @required
     resourceType: String
 }
