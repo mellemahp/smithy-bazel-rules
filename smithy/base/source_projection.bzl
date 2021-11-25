@@ -58,6 +58,7 @@ def _impl_source_projection(ctx):
         command = " && ".join(cmds),
         progress_message = "generating files for smithy library",
         arguments = [],
+        tools = ctx.files._jdk,
     )
 
     return [DefaultInfo(files = depset(outlist))]
@@ -104,7 +105,13 @@ smithy_source_projection = rule(
         # filter out files from projection
         "filters": attr.string_list(),
 
-        # JDK to use for executing JAR file
+        # JDK to use for executing smithy cli jar
+        "_jdk": attr.label(
+            default = Label("@bazel_tools//tools/jdk:current_java_runtime"),
+            providers = [java_common.JavaRuntimeInfo],
+        ),
+
+        # Smithy CLI to use
         "smithy_cli": attr.label(
             cfg = "host",
             default = Label("//external:io_bazel_rules_smithy/dependency/smithy-cli"),

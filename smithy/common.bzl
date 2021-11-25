@@ -6,7 +6,8 @@ for standalone use.
 """
 
 def base_build_cmd(ctx, discovery = True):
-    gen_cmd = "java -jar {cli_jar} build".format(
+    gen_cmd = "{java_path} -jar {cli_jar} build".format(
+        java_path = ctx.attr._jdk[java_common.JavaRuntimeInfo].java_executable_exec_path,
         cli_jar = ctx.file.smithy_cli.path,
     )
 

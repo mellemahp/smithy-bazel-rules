@@ -26,6 +26,7 @@ def _impl_openapi(ctx):
         command = " && ".join(cmds),
         progress_message = "generating openapi for smithy projection %s" % ctx.attr.projection,
         arguments = [],
+        tools = ctx.files._jdk,
     )
 
     return struct(
@@ -72,7 +73,13 @@ smithy_openapi = rule(
         "force_color": attr.bool(),
         "stacktrace": attr.bool(),
 
-        # JDK to use for executing JAR file
+        # JDK to use for executing smithy cli jar
+        "_jdk": attr.label(
+            default = Label("@bazel_tools//tools/jdk:current_java_runtime"),
+            providers = [java_common.JavaRuntimeInfo],
+        ),
+
+        # Smithy Cli jar to use
         "smithy_cli": attr.label(
             cfg = "host",
             default = Label("//external:io_bazel_rules_smithy/dependency/smithy-cli"),
