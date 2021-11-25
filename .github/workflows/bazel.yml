@@ -12,3 +12,13 @@ jobs:
           bazel-version: "4.0.0"
       - name: Build all test targets
         run: bazel build //test:all
+      - name: Build Release tar
+        run: bazel build release
+      - name: Create github release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: dist/bin/release.tar.gz
+          body: "Automatic release for ${{ github.sha }}"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit: ${{ github.sha }}
+          tag: 0.1.0
