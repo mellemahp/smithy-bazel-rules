@@ -2,7 +2,7 @@
 
 """
 
-load("//smithy:smithy.bzl", "smithy_openapi")
+load("//smithy/openapi:openapi.bzl", "smithy_openapi")
 load("@openapi_tools_generator_bazel//:defs.bzl", "openapi_generator")
 
 def _impl_extract_java_models_from_openapi_codegen(ctx):

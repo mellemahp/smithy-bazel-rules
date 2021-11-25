@@ -1,6 +1,5 @@
-load("//smithy:smithy.bzl", "smithy_library", "smithy_openapi")
 load("@openapi_tools_generator_bazel//:defs.bzl", "openapi_generator")
-load("//smithy/codegen:java.bzl", "smithy_java_models")
+load("//smithy:smithy.bzl", "smithy_java_models", "smithy_library", "smithy_openapi")
 
 smithy_library(
     name = "smithy_library_build_test",
