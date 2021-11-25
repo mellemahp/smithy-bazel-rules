@@ -34,13 +34,17 @@ If you are using Smithy models in your project I encourage you to use some of th
     - [Building an Openapi Spec](#building-an-openapi-spec)  
     - [Smithy Libraries and Common models](#smithy-libraries-and-common-models)
     - [From Smithy Model to Generated Code](#from-smithy-model-to-generated-code)
+    - [Java Model Codegen [WIP]](#java-model-codegen)
+    - [TypeScript Codegen [WIP]](#typescript-codegen)
+- [Validators](#validators)
+    - [Adding Builtin Validators](#adding-built-in-validators)
+    - [Making A custom Validator](#making-a-custom-validator)
 - [Provided Build Rules](#provided-build-rules)
-    - [smithy_openapi](#smithy_openapi)
     - [smithy_source](#smithy_source)
+    - [smithy_openapi](#smithy_openapi)
     - [smithy_library](#smithy_library)
-- [Validators]()
-    - [Adding Builtin Validators]()
-    - [Making A custom Validator]()
+    - [smithy_java_models](#smithy_java_models)
+
 
 ## Getting Started 
 ### Setting Up Your Workspace
@@ -244,7 +248,7 @@ Running `bazel build //:weather_codegen` will now generate a directory containin
 
 Additional macros are provided by this project to generate just the model files from a Smithy specification for a number of languages. 
 
-## Java Model Codegen Macro
+## Java Model Codegen
 We are now going to use our example weather service to build just the Java model files for the service. These models are useful in both the backend and frontend services.
 
 ```
