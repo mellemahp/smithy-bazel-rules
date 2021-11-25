@@ -259,9 +259,84 @@ This will generate a new java library jar containing the models defined in the S
 Smithy provides support for validators (or linters) that can be used to check the consistency and style of a service when Smithy builds the service model. This package provides support for a number of built in validators and an example custom validator is also proveded below.
 
 ### Adding Built in Validators
+You can define a jar containing smithy validators as follows: 
 
+```starlark
+load("//smithy/validation:validation.bzl", "smithy_validator_library")
+
+smithy_validator_library(
+    name="validation_library", 
+    filters = ["ValidationFileToSkip"]
+)
+```
+
+You can then add this library jar as a dependency to another Smithy rule to add validation. For example, we could add our library above to an openApi Rule to add validation to that rule:
+
+```starlark
+
+smithy_openapi(
+    name = "openapi_spec",
+    srcs = [":model_files"],
+    config = "smithy-build.json",
+    projection = "model",
+    service_name = "Weather",
+    deps = [
+        ":smithy_library",
+        ":validation_library"
+    ],
+)
+
+```
 
 ### Making A custom Validator
+Let's say you want to add a validator that is not included in the built in validators, for example, you want to add a `ReservedWords` linter to prevent a project codename from being included in your public model. First, let's create a `my_validator.smithy` file in a folder named `extra_validations/`: 
+
+```
+$version: "1.0"
+
+metadata validators = [{
+    id: "MyReservedWords"
+    name: "ReservedWords",
+    configuration: {
+        reserved: [
+            {
+                words: ["ReservedWord"],
+                reason: "This is a reserved word. Dont use it.",
+            },
+        ]
+    }
+}]
+```
+
+You can now either just include the above file in the sources of a smithy rule or you can create a new smithy library containing this validation as: 
+
+```starlark 
+load("//smithy:smithy.bzl", "smithy_library")
+
+smithy_library(
+    name = "validation_lib",
+    srcs = [":library_files"],
+    config = "smithy-no-op-build.json",
+    root_dir = "extra_validations",
+)
+
+filegroup(
+    name = "library_files",
+    srcs = [] + glob(["extra_validations/*"]),
+)
+
+```
+
+We can then just include the library above as a dependency of our other smithy rules to enable it as a validation.
+
+
+### Validation suppression
+You can suppress a validator easily by adding a validation suppression trait to a resource. This should be used sparingly. For example, you could suppress the ReservedWords validator we made above by adding the following: 
+
+```
+@suppress(["MyReservedWords"])
+string ReservedWordResource
+```
 
 ## Provided Build Rules
 The following are the build rules currently supported by this package
