@@ -75,12 +75,7 @@ def smithy_java_models(name, srcs, config, projection, service_name, model_names
     )
 
     extract_java_models_from_openapi_codegen(
-        name = "{name}_model_jar".format(name = name),
+        name = name,
         src = "{name}_codegen".format(name = name),
         model_package = model_namespace,
-    )
-
-    native.java_library(
-        name = name,
-        resource_jars = ["{name}_model_jar".format(name = name)],
     )
