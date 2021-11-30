@@ -26,9 +26,23 @@ def _impl_extract_java_models_from_openapi_codegen(ctx):
         command = cmd,
     )
 
-    return struct(
-        model_jar = ctx.outputs.model_jar,
+    java_toolchain = ctx.attr._java_toolchain[java_common.JavaToolchainInfo]
+    ijar = java_common.run_ijar(
+        actions = ctx.actions,
+        jar = ctx.outputs.model_jar,
+        target_label = ctx.label,
+        java_toolchain = java_toolchain,
     )
+
+    return [
+        DefaultInfo(
+            files = depset([ctx.outputs.model_jar]),
+        ),
+        JavaInfo(
+            output_jar = ctx.outputs.model_jar,
+            compile_jar = ijar,
+        ),
+    ]
 
 extract_java_models_from_openapi_codegen = rule(
     attrs = {
@@ -41,10 +55,14 @@ extract_java_models_from_openapi_codegen = rule(
             default = Label("@bazel_tools//tools/jdk:current_java_runtime"),
             providers = [java_common.JavaRuntimeInfo],
         ),
+        "_java_toolchain": attr.label(
+            default = "@bazel_tools//tools/jdk:current_java_toolchain",
+        ),
     },
     outputs = {
         "model_jar": "%{name}_models.jar",
     },
+    provides = [JavaInfo],
     implementation = _impl_extract_java_models_from_openapi_codegen,
 )
 
