@@ -5,14 +5,15 @@
 load("//smithy/openapi:openapi.bzl", "smithy_openapi")
 load("@openapi_tools_generator_bazel//:defs.bzl", "openapi_generator")
 
-def _impl_extract_java_models_from_openapi_codegen(ctx):
-    java_runtime = ctx.attr._jdk[java_common.JavaRuntimeInfo]
+def extract_model_sourcejar(ctx, java_runtime):
     jar_path = "%s/bin/jar" % java_runtime.java_home
+
+    srcjar = ctx.actions.declare_file("%s-model-gensrc.jar" % ctx.label.name)
 
     cmd = "%s cf" % jar_path
 
     # add output jar file path
-    cmd += " %s" % ctx.outputs.model_jar.path
+    cmd += " %s" % srcjar.path
 
     # select the path of the code gen output
     cmd += " -C %s/src/main/java/" % ctx.file.src.path
@@ -22,33 +23,43 @@ def _impl_extract_java_models_from_openapi_codegen(ctx):
 
     ctx.actions.run_shell(
         inputs = ctx.files._jdk + [ctx.file.src],
-        outputs = [ctx.outputs.model_jar],
+        outputs = [srcjar],
         command = cmd,
     )
 
+    return srcjar
+
+def _impl_extract_java_models_from_openapi_codegen(ctx):
     java_toolchain = ctx.attr._java_toolchain[java_common.JavaToolchainInfo]
-    ijar = java_common.run_ijar(
-        actions = ctx.actions,
-        jar = ctx.outputs.model_jar,
-        target_label = ctx.label,
+    java_runtime = ctx.attr._jdk[java_common.JavaRuntimeInfo]
+
+    srcjar = extract_model_sourcejar(ctx, java_runtime)
+    deps_java_info = java_common.merge([dep[JavaInfo] for dep in ctx.attr.deps])
+
+    java_info = java_common.compile(
+        ctx,
         java_toolchain = java_toolchain,
+        output = ctx.outputs.model_jar,
+        output_source_jar = ctx.outputs.model_srcjar,
+        source_jars = [srcjar],
+        deps = [java_common.make_non_strict(deps_java_info)],
     )
 
-    return [
-        DefaultInfo(
-            files = depset([ctx.outputs.model_jar]),
-        ),
-        JavaInfo(
-            output_jar = ctx.outputs.model_jar,
-            compile_jar = ijar,
-        ),
-    ]
+    return [java_info]
 
 extract_java_models_from_openapi_codegen = rule(
     attrs = {
         # output of openapi code gen
-        "src": attr.label(mandatory = True, allow_single_file = True),
-
+        "src": attr.label(
+            mandatory = True,
+            allow_single_file = True,
+        ),
+        # deps for generated library
+        "deps": attr.label_list(
+            mandatory = True,
+            allow_empty = False,
+            providers = [JavaInfo],
+        ),
         # namespace of model package
         "model_package": attr.string(mandatory = True),
         "_jdk": attr.label(
@@ -60,8 +71,10 @@ extract_java_models_from_openapi_codegen = rule(
         ),
     },
     outputs = {
-        "model_jar": "%{name}_models.jar",
+        "model_jar": "lib%{name}-models.jar",
+        "model_srcjar": "lib%{name}-models-src.jar",
     },
+    fragments = ["java"],
     provides = [JavaInfo],
     implementation = _impl_extract_java_models_from_openapi_codegen,
 )
@@ -77,7 +90,7 @@ def smithy_java_models(name, srcs, config, projection, service_name, model_names
     )
 
     openapi_generator(
-        name = "{name}_codegen".format(name = name),
+        name = "openapi_gen_{name}".format(name = name),
         additional_properties = {
             "library": gen_library,
         },
@@ -94,6 +107,13 @@ def smithy_java_models(name, srcs, config, projection, service_name, model_names
 
     extract_java_models_from_openapi_codegen(
         name = name,
-        src = "{name}_codegen".format(name = name),
+        deps = [
+            "@maven//:io_swagger_swagger_annotations",
+            "@maven//:com_fasterxml_jackson_core_jackson_annotations",
+            "@maven//:javax_annotation_javax_annotation_api",
+            "@maven//:org_openapitools_jackson_databind_nullable",
+            "@maven//:com_google_code_findbugs_jsr305",
+        ],
+        src = "openapi_gen_{name}".format(name = name),
         model_package = model_namespace,
     )
