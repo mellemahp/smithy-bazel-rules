@@ -14,13 +14,24 @@ filegroup(
     srcs = [] + glob(["other/*"]),
 )
 
+smithy_library(
+    name = "validation_lib",
+    srcs = ["//smithy/validation:validators"],
+    config = "smithy-build-no-op.json",
+    filters = ["ShouldHaveUsedTimestamp"],
+    root_dir = "validators",
+)
+
 smithy_openapi(
     name = "smithy_openapi_build_test",
     srcs = [":model_files"],
     config = "smithy-build.json",
     projection = "model",
     service_name = "Weather",
-    deps = [":smithy_library_build_test"],
+    deps = [
+        ":validation_lib",
+        ":smithy_library_build_test",
+    ],
 )
 
 filegroup(

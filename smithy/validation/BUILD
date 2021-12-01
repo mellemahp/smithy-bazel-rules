@@ -1,9 +1,5 @@
 exports_files(
-    [
-        "BUILD",
-        "no-op-smithy-build.json",
-        "validation.bzl",
-    ],
+    ["BUILD"],
 )
 
 filegroup(

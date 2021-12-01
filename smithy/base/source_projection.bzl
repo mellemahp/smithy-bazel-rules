@@ -4,14 +4,19 @@ This rule is mostly used for constructing smithy library jars
 
 """
 
-load("//smithy:common.bzl", "generate_full_build_cmd")
+load("//smithy:common.bzl", "generate_full_build_cmd", "get_filters")
 
 SMITHY_PREFIX = "./build/smithy/source/sources/"
 META_PREFIX = "java/META-INF/smithy/"
+# Required to prevent collision between rules
+OUT_DIR_SUFFIX = "buildDir"
+SMITHY_FILTER_SUFFIX = ".smithy"
 
-def _add_manifest_file(ctx, cmds):
+def _add_manifest_file(ctx, out_dir, cmds):
     # include auto-generated manifest file
-    manifest_file = ctx.actions.declare_file(META_PREFIX + "manifest")
+    manifest_file = ctx.actions.declare_file(
+        out_dir + META_PREFIX + "manifest"
+    )
     outlist = [manifest_file]
     cmds.append("cp {inpath} {outpath}".format(
         inpath = SMITHY_PREFIX + "manifest",
@@ -20,19 +25,18 @@ def _add_manifest_file(ctx, cmds):
 
     return cmds, outlist
 
-def _extract_relative_paths(ctx, cmds, outlist):
+def _extract_relative_paths(ctx, out_dir, cmds, outlist):
     for file in ctx.files.srcs:
         # ignore any files in the filter list
-        if not file.basename in ctx.attr.filters:
+        if not file.basename in get_filters(ctx, ctx.attr.filters):
             path_model_relative = file.path.split(
                 "{root}/".format(root = ctx.attr.root_dir),
                 1,
             )[-1]
             inpath = SMITHY_PREFIX + path_model_relative
-            outpath = META_PREFIX + path_model_relative
+            outpath = out_dir + META_PREFIX + path_model_relative
             outfile = ctx.actions.declare_file(outpath)
             outlist.append(outfile)
-
             cmds.append(
                 "cp {inpath} {outpath}".format(
                     inpath = inpath,
@@ -42,15 +46,19 @@ def _extract_relative_paths(ctx, cmds, outlist):
 
     return cmds, outlist
 
+
 def _impl_source_projection(ctx):
     inputs = ctx.files.srcs + ctx.files.deps + [
         ctx.file.smithy_cli,
         ctx.file.config,
     ]
 
-    cmds = [generate_full_build_cmd(ctx, source_projection = True)]
-    cmds, outlist = _add_manifest_file(ctx, cmds)
-    cmds, outlist = _extract_relative_paths(ctx, cmds, outlist)
+    # create output directory to prevent collisions between rules
+    out_dir = ctx.attr.name + OUT_DIR_SUFFIX + "/"
+
+    cmds = [generate_full_build_cmd(ctx, source_projection = True, filters=ctx.attr.filters)]
+    cmds, outlist = _add_manifest_file(ctx, out_dir, cmds)
+    cmds, outlist = _extract_relative_paths(ctx, out_dir, cmds, outlist)
 
     ctx.actions.run_shell(
         inputs = inputs,

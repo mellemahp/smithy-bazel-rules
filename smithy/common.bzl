@@ -4,6 +4,7 @@ These methods should be used in other build rules and are not intended
 for standalone use. 
 
 """
+FILTER_EXTENSION = ".smithy"
 
 def base_build_cmd(ctx, discovery = True):
     gen_cmd = "{java_path} -jar {cli_jar} build".format(
@@ -68,10 +69,21 @@ def add_config(ctx, gen_cmd):
 
     return gen_cmd
 
+# gets files to filter out
+def get_filters(ctx, filters): 
+    updated_filters = []
+    for filter in filters:
+        if not filter.endswith(FILTER_EXTENSION):
+            filter += FILTER_EXTENSION
+        updated_filters.append(filter)
+
+    return updated_filters
+
 # add sources such as Model files for use in the build
-def add_source_folder(ctx, gen_cmd):
+def add_source_folder(ctx, gen_cmd, filters):
     for file in ctx.files.srcs:
-        gen_cmd += " {path}".format(path = file.path)
+        if file.basename not in get_filters(ctx, filters):
+            gen_cmd += " {path}".format(path = file.path)
 
     return gen_cmd
 
@@ -83,7 +95,7 @@ def add_deps(ctx, gen_cmd):
 
     return gen_cmd
 
-def generate_full_build_cmd(ctx, source_projection = False, plugin = None):
+def generate_full_build_cmd(ctx, source_projection = False, plugin = None, filters=[]):
     base_cmd = base_build_cmd(ctx)
 
     if plugin:
@@ -94,7 +106,7 @@ def generate_full_build_cmd(ctx, source_projection = False, plugin = None):
 
     base_cmd = add_options(ctx, base_cmd)
     base_cmd = add_config(ctx, base_cmd)
-    base_cmd = add_source_folder(ctx, base_cmd)
+    base_cmd = add_source_folder(ctx, base_cmd, filters=filters)
     base_cmd = add_deps(ctx, base_cmd)
 
     return base_cmd
