@@ -25,7 +25,6 @@ pkg_tar(
         # Validation
         "//smithy/validation:BUILD",
         "//smithy/validation:validation.bzl",
-        "//smithy/validation:no-op-smithy-build.json",
         # Validators
         "//smithy/validation:validators",
     ],
