@@ -24,7 +24,6 @@ pkg_tar(
         "//smithy/codegen:typescript.bzl",
         # Validation
         "//smithy/validation:BUILD",
-        "//smithy/validation:validation.bzl",
         # Validators
         "//smithy/validation:validators",
     ],
