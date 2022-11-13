@@ -1,4 +1,4 @@
-$version: "1.0"
+$version: "2.0"
 
 // ============================
 // Check Input/Output Names
@@ -18,7 +18,7 @@ metadata validators = [
         id: "OperationOutputName",
         message: "This shape is referenced as output but the name does not end with 'Response'",
         configuration: {
-            selector: "operation -[output]-> :not([id|name$=Response i])"
+            selector: "operation -[output]-> :not([id|name$=Output i])"
         }
     },
 ]

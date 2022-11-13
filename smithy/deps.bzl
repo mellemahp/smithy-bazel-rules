@@ -22,12 +22,18 @@ _SUPPORTED_PROVIDERS = {
                 "url": "https://github.com/mellemahp/smithy-cli-executable/releases/download/1.14.0/smithy_cli.jar",
                 "sha": "6fa4a856517a23ed4ad57ee3b80fdd92a675acc37597a2364072d785a9f65849",
             },
+            "2.0.0": {
+                "artifact": "smithy-cli.jar",
+                "url": "https://github.com/mellemahp/smithy-cli-executable/releases/download/2.0.0/smithy_cli.jar",
+                "sha": "2952fbbd98ce5774e533cb9f3d0377437ee79b2c2fc5f0ce9185ebfa6c41bc71",
+            },
         },
     },
+
 }
 
 def smithy_cli_init(
-        smithy_cli_version = "1.14.0",
+        smithy_cli_version = "2.0.0",
         smithy_cli_provider = "mellemahp",
         prefix = "io_bazel_rules_smithy"):
     http_jar(

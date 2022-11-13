@@ -1,4 +1,4 @@
-$version: "1.0"
+$version: "2.0"
 
 // ==============================
 // Check for integers without a ranges in Inputs 

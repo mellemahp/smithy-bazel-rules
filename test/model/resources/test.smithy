@@ -1,9 +1,9 @@
-$version: "1.0"
+$version: "2.0"
 
 namespace example.weather
 
-use example.pagelib#PageSize
-use example.pagelib#Token
+use example.weather#PageSize
+use example.weather#Token
 
 resource City {
     identifiers: { cityId: CityId },
@@ -28,12 +28,13 @@ string CityId
     uri: "/city/{cityId}"
 )
 operation GetCity {
-    input: GetCityRequest,
-    output: GetCityResponse,
+    input: GetCityInput,
+    output: GetCityOutput,
     errors: [NoSuchResourceException]
 } 
 
-structure GetCityRequest {
+@input
+structure GetCityInput {
     // "cityId" provides the identifier for the resource and
     // has to be marked as required.
     @required
@@ -41,7 +42,8 @@ structure GetCityRequest {
     cityId: CityId
 }
 
-structure GetCityResponse {
+@output
+structure GetCityOutput {
     // "required" is used on output to indicate if the service
     // will always provide a value for the member.
     @required
@@ -78,11 +80,12 @@ structure NoSuchResourceException {
     uri: "/cities"
 )
 operation ListCities {
-    input: ListCitiesRequest,
-    output: ListCitiesResponse
+    input: ListCitiesInput,
+    output: ListCitiesOutput
 }
 
-structure ListCitiesRequest {
+@input
+structure ListCitiesInput {
     @httpQuery("nextToken")
     nextToken: Token,
 
@@ -90,7 +93,8 @@ structure ListCitiesRequest {
     pageSize: PageSize
 }
 
-structure ListCitiesResponse {
+@output
+structure ListCitiesOutput {
     nextToken: String,
 
     @required
@@ -102,16 +106,17 @@ list CitySummaries {
     member: CitySummary
 }
 
+@mixin
+structure NamedMixin {
+    @required
+    name: String
+}
+
 // CitySummary contains a reference to a City.
 @references([{resource: City}])
-structure CitySummary {
+structure CitySummary with [NamedMixin]{
     @required
     cityId: CityId,
-
-    @required
-    name: String,
-
-
 }
 
 @readonly
@@ -120,10 +125,11 @@ structure CitySummary {
     uri: "/time"
 )
 operation GetCurrentTime {
-    output: GetCurrentTimeResponse
+    output: GetCurrentTimeOutput
 }
 
-structure GetCurrentTimeResponse {
+@output
+structure GetCurrentTimeOutput {
     @required
     time: Timestamp
 }
@@ -134,18 +140,15 @@ structure GetCurrentTimeResponse {
     uri: "/forecast/{cityId}"
 )
 operation GetForecast {
-    input: GetForecastRequest,
-    output: GetForecastResponse
+    input := {
+        @required
+        @httpLabel
+        cityId: CityId,
+    },
+    output: GetForecastOutput
 }
 
-// "cityId" provides the only identifier for the resource since
-// a Forecast doesn't have its own.
-structure GetForecastRequest {
-    @required
-    @httpLabel
-    cityId: CityId,
-}
-
-structure GetForecastResponse {
+@output
+structure GetForecastOutput {
     chanceOfRain: Float
 }

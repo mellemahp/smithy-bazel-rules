@@ -22,9 +22,8 @@ openapi_tools_generator_bazel_repositories()
 ### MAVEN
 ################
 # import libraries from maven
-RULES_JVM_EXTERNAL_TAG = "2.8"
-
-RULES_JVM_EXTERNAL_SHA = "79c9850690d7614ecdb72d68394f994fef7534b292c4867ce5e7dec0aa7bdfad"
+RULES_JVM_EXTERNAL_TAG = "4.4.2"
+RULES_JVM_EXTERNAL_SHA = "735602f50813eb2ea93ca3f5e43b1959bd80b213b836a07a62a29d757670b77b"
 
 http_archive(
     name = "rules_jvm_external",
@@ -32,18 +31,21 @@ http_archive(
     strip_prefix = "rules_jvm_external-%s" % RULES_JVM_EXTERNAL_TAG,
     url = "https://github.com/bazelbuild/rules_jvm_external/archive/%s.zip" % RULES_JVM_EXTERNAL_TAG,
 )
+load("@rules_jvm_external//:repositories.bzl", "rules_jvm_external_deps")
+rules_jvm_external_deps()
+
+load("@rules_jvm_external//:setup.bzl", "rules_jvm_external_setup")
+rules_jvm_external_setup()
 
 load("@rules_jvm_external//:defs.bzl", "maven_install")
 
+
+#####################
+# Java Dependencies #
+#####################
+load("//:dependencies.bzl", "JAVA_DEPENDENCIES", "MAVEN_REPOS")
 maven_install(
-    artifacts = [
-        "javax.annotation:javax.annotation-api:1.3.2",
-        "com.fasterxml.jackson.core:jackson-annotations:2.12.4",
-        "io.swagger:swagger-annotations:1.6.3",
-        "org.openapitools:jackson-databind-nullable:0.2.2",
-        "com.google.code.findbugs:jsr305:3.0.2",
-    ],
-    repositories = [
-        "https://repo1.maven.org/maven2",
-    ],
+    name = "maven",
+    artifacts = JAVA_DEPENDENCIES,
+    repositories = MAVEN_REPOS,
 )

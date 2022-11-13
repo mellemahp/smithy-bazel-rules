@@ -296,7 +296,7 @@ smithy_openapi(
 Let's say you want to add a validator that is not included in the built in validators, for example, you want to add a `ReservedWords` linter to prevent a project codename from being included in your public model. First, let's create a `my_validator.smithy` file in a folder named `extra_validations/`: 
 
 ```
-$version: "1.0"
+$version: "2.0"
 
 metadata validators = [{
     id: "MyReservedWords"

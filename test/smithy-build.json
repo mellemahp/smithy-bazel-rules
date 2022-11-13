@@ -1,5 +1,5 @@
 {
-    "version": "1.0",
+    "version": "2.0",
     "projections": {
         "model": {
             "plugins": {
@@ -8,24 +8,6 @@
                     "protocol": "aws.protocols#restJson1",
                     "keepUnusedComponents": true,
                     "useIntegerType": true
-                }
-            },
-            "transforms": [
-                {
-                    "name": "removeUnusedShapes",
-                    "args": {}
-                }
-            ]
-        },
-        "sdk": {
-            "plugins": {
-                "typescript-codegen": {
-                    "service": "example.weather#Weather",
-                    "package": "weather",
-                    "packageVersion": "0.0.1",
-                    "packageJson": {
-                        "license": "Apache-2.0"
-                    }
                 }
             },
             "transforms": [
