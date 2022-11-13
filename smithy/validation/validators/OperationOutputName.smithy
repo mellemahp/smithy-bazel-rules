@@ -16,7 +16,7 @@ metadata validators = [
     {
         name: "EmitEachSelector",
         id: "OperationOutputName",
-        message: "This shape is referenced as output but the name does not end with 'Response'",
+        message: "This shape is referenced as output but the name does not end with 'Output'",
         configuration: {
             selector: "operation -[output]-> :not([id|name$=Output i])"
         }

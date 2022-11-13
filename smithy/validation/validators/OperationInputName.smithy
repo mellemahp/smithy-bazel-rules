@@ -15,7 +15,7 @@ metadata validators = [
     {
         name: "EmitEachSelector",
         id: "OperationInputName",
-        message: "This shape is referenced as input but the name does not end with 'Request'",
+        message: "This shape is referenced as input but the name does not end with 'Input'",
         configuration: {
             selector: "operation -[input]-> :not([id|name$=Input i])"
         }

@@ -21,4 +21,4 @@ jobs:
           body: "Automatic release for ${{ github.sha }}"
           token: ${{ secrets.GITHUB_TOKEN }}
           commit: ${{ github.sha }}
-          tag: 2.0.0
+          tag: 2.0.1
