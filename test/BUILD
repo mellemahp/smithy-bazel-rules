@@ -1,5 +1,5 @@
 load("@openapi_tools_generator_bazel//:defs.bzl", "openapi_generator")
-load("//smithy:smithy.bzl", "smithy_java_models", "smithy_library", "smithy_openapi")
+load("//smithy:smithy.bzl", "smithy_java_models", "smithy_library", "smithy_openapi", "smithy_ast")
 load("//smithy/codegen:java.bzl", "extract_java_models_from_openapi_codegen")
 
 smithy_library(
@@ -11,7 +11,7 @@ smithy_library(
 
 filegroup(
     name = "library_files",
-    srcs = [] + glob(["other/*"]),
+    srcs = [] + glob(["other/**"]),
 )
 
 smithy_library(
@@ -63,4 +63,15 @@ smithy_java_models(
     projection = "model",
     service_name = "Weather",
     deps = [":smithy_library_build_test"],
+)
+
+smithy_ast(
+    name = "smithy_ast_build_test",
+    srcs = [":model_files"],
+    config = "smithy-build.json",
+    projection = "model",
+    deps = [
+        ":validation_lib",
+        ":smithy_library_build_test",
+    ],
 )

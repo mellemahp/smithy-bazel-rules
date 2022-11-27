@@ -9,7 +9,7 @@ build cli
 load("//smithy:common.bzl", "generate_full_build_cmd")
 load("//smithy/base:source_projection.bzl", "smithy_source_projection")
 
-def smithy_library(name, srcs, config, root_dir, filters = []):
+def smithy_library(name, srcs, config, root_dir=None, filters = []):
     smithy_source_projection(
         name = name + "source",
         srcs = srcs,
@@ -20,5 +20,5 @@ def smithy_library(name, srcs, config, root_dir, filters = []):
 
     native.java_library(
         name = name,
-        resources = [name + "source"],
+        resources = [name + "source"]
     )

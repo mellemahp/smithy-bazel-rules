@@ -1,54 +1,47 @@
-"""Bazel rules for generating OpenApi specs from a smithy projection
+"""Bazel rules for generating JSON Ast from a smithy library
 
 """
-
 load("//smithy:common.bzl", "generate_full_build_cmd")
 
-def _generate_projection_extraction_cmd(ctx):
-    return "cp build/smithy/{projection}/openapi/{service}.openapi.json {output}".format(
+def _generate_ast_extraction_cmd(ctx):
+    return "cp build/smithy/{projection}/{projection}/{projection}.json {output}".format(
         projection = ctx.attr.projection,
-        service = ctx.attr.service_name,
-        output = ctx.outputs.openapi.path,
+        output = ctx.outputs.ast.path,
     )
 
-def _impl_openapi(ctx):
+def _impl_smithy_ast(ctx):
     inputs = ctx.files.srcs + ctx.files.deps + [
         ctx.file.smithy_cli,
         ctx.file.config,
     ]
 
-    cmds = [generate_full_build_cmd(ctx, plugin = "openapi")]
-    cmds += [_generate_projection_extraction_cmd(ctx)]
+    cmds = [generate_full_build_cmd(ctx)]
+    cmds += [_generate_ast_extraction_cmd(ctx)]
 
     ctx.actions.run_shell(
         inputs = inputs,
-        outputs = [ctx.outputs.openapi],
+        outputs = [ctx.outputs.ast],
         command = " && ".join(cmds),
-        progress_message = "generating openapi for smithy projection %s" % ctx.attr.projection,
+        progress_message = "extracting ast for smithy projection %s" % ctx.attr.projection,
         arguments = [],
         tools = ctx.files._jdk,
     )
 
-    return struct(
-        openapi = ctx.outputs.openapi,
-    )
+    return struct(ast = ctx.outputs.ast)
 
-smithy_openapi = rule(
+smithy_ast = rule(
     attrs = {
-        "service_name": attr.string(
-            mandatory = True,
-        ),
-
-        # upstream smithy library dependencies
-        "deps": attr.label_list(
-            allow_files = [".jar"],
-        ),
-
         # smithy source files
         "srcs": attr.label_list(
             allow_files = [
-                ".smithy",
-                ".json",
+                ".smithy"
+            ],
+        ),
+
+        # upstream dependencies
+        "deps": attr.label_list(
+            allow_files = [
+                ".jar",
             ],
         ),
 
@@ -64,8 +57,8 @@ smithy_openapi = rule(
         "projection": attr.string(
             mandatory = True,
         ),
-        "severity": attr.string(),
         "logging": attr.string(default = "INFO"),
+        "severity": attr.string(),
 
         # cli flags
         "debug": attr.bool(),
@@ -80,7 +73,7 @@ smithy_openapi = rule(
             providers = [java_common.JavaRuntimeInfo],
         ),
 
-        # Smithy Cli jar to use
+        # Smithy CLI to use
         "smithy_cli": attr.label(
             cfg = "host",
             default = Label("//external:io_bazel_rules_smithy/dependency/smithy-cli"),
@@ -88,7 +81,7 @@ smithy_openapi = rule(
         ),
     },
     outputs = {
-        "openapi": "%{name}.openapi.json",
+        "ast": "%{name}.ast.json",
     },
-    implementation = _impl_openapi,
+    implementation = _impl_smithy_ast,
 )

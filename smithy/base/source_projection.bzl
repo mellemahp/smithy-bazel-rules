@@ -29,14 +29,16 @@ def _extract_relative_paths(ctx, out_dir, cmds, outlist):
     for file in ctx.files.srcs:
         # ignore any files in the filter list
         if not file.basename in get_filters(ctx, ctx.attr.filters):
+            # the source projection flattens all of the output paths
             path_model_relative = file.path.split(
                 "{root}/".format(root = ctx.attr.root_dir),
                 1,
-            )[-1]
+            )[-1].split("/")[-1]
             inpath = SMITHY_PREFIX + path_model_relative
             outpath = out_dir + META_PREFIX + path_model_relative
             outfile = ctx.actions.declare_file(outpath)
             outlist.append(outfile)
+
             cmds.append(
                 "cp {inpath} {outpath}".format(
                     inpath = inpath,
@@ -45,7 +47,6 @@ def _extract_relative_paths(ctx, out_dir, cmds, outlist):
             )
 
     return cmds, outlist
-
 
 def _impl_source_projection(ctx):
     inputs = ctx.files.srcs + ctx.files.deps + [
@@ -75,7 +76,6 @@ smithy_source_projection = rule(
     attrs = {
         # root directory for model files
         "root_dir": attr.string(
-            mandatory = True,
             default = "model",
         ),
 
@@ -109,6 +109,7 @@ smithy_source_projection = rule(
         "no_color": attr.bool(),
         "force_color": attr.bool(),
         "stacktrace": attr.bool(),
+        "quiet": attr.bool(),
 
         # filter out files from projection
         "filters": attr.string_list(),

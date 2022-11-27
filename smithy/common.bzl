@@ -6,10 +6,11 @@ for standalone use.
 """
 FILTER_EXTENSION = ".smithy"
 
-def base_build_cmd(ctx, discovery = True):
-    gen_cmd = "{java_path} -jar {cli_jar} build".format(
+def base_cli_cmd(ctx, command="build", discovery = True):
+    gen_cmd = "{java_path} -jar {cli_jar} {command}".format(
         java_path = ctx.attr._jdk[java_common.JavaRuntimeInfo].java_executable_exec_path,
         cli_jar = ctx.file.smithy_cli.path,
+        command = command
     )
 
     # The -d option allows the cli to discover Smithy Models
@@ -36,19 +37,37 @@ def add_projection(ctx, gen_cmd):
 
     return gen_cmd
 
-def add_options(ctx, gen_cmd):
+
+def add_build_options(ctx, gen_cmd):
+    gen_cmd = add_severity_option(ctx, gen_cmd)
+    gen_cmd = add_debug_option(ctx, gen_cmd)
+    gen_cmd = add_logging_options(ctx, gen_cmd)
+    gen_cmd = add_stacktrace_option(ctx, gen_cmd)
+    gen_cmd = add_quiet_option(ctx, gen_cmd)
+
+    return gen_cmd
+
+def add_severity_option(ctx, gen_cmd):
     if ctx.attr.severity:
         gen_cmd += " --severity {severity}".format(
             severity = ctx.attr.severity,
         )
 
+    return gen_cmd
+
+
+def add_debug_option(ctx, gen_cmd):
+    if ctx.attr.debug:
+        gen_cmd += " --debug"
+
+    return gen_cmd
+
+
+def add_logging_options(ctx, gen_cmd):
     if ctx.attr.logging:
         gen_cmd += " --logging {logging}".format(
             logging = ctx.attr.logging,
         )
-
-    if ctx.attr.debug:
-        gen_cmd += " --debug"
 
     if ctx.attr.no_color:
         gen_cmd += " --no-color"
@@ -56,8 +75,17 @@ def add_options(ctx, gen_cmd):
     if ctx.attr.force_color:
         gen_cmd += " --force-color"
 
+    return gen_cmd
+
+def add_stacktrace_option(ctx, gen_cmd):
     if ctx.attr.stacktrace:
-        gen_cmd += " --stacktrace"
+            gen_cmd += " --stacktrace"
+
+    return gen_cmd
+
+def add_quiet_option(ctx, gen_cmd):
+    if ctx.attr.quiet:
+            gen_cmd += " --quiet"
 
     return gen_cmd
 
@@ -95,8 +123,9 @@ def add_deps(ctx, gen_cmd):
 
     return gen_cmd
 
+
 def generate_full_build_cmd(ctx, source_projection = False, plugin = None, filters=[]):
-    base_cmd = base_build_cmd(ctx)
+    base_cmd = base_cli_cmd(ctx, command="build")
 
     if plugin:
         base_cmd = add_plugin(ctx, base_cmd, plugin)
@@ -104,7 +133,7 @@ def generate_full_build_cmd(ctx, source_projection = False, plugin = None, filte
     if not source_projection:
         base_cmd = add_projection(ctx, base_cmd)
 
-    base_cmd = add_options(ctx, base_cmd)
+    base_cmd = add_build_options(ctx, base_cmd)
     base_cmd = add_config(ctx, base_cmd)
     base_cmd = add_source_folder(ctx, base_cmd, filters=filters)
     base_cmd = add_deps(ctx, base_cmd)
