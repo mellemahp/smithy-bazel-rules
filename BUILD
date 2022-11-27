@@ -26,6 +26,9 @@ pkg_tar(
         "//smithy/validation:BUILD",
         # Validators
         "//smithy/validation:validators",
+        # AST Extraction
+        "//smithy/ast:BUILD",
+        "//smithy/ast:ast.bzl"
     ],
     extension = "tar.gz",
     strip_prefix = "./io_bazel_rules_smithy",
