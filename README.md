@@ -31,19 +31,13 @@ If you are using Smithy models in your project I encourage you to use some of th
 ## Table of Contents 
 - [Getting Started](#getting-started)  
     - [Setting Up Your Workspace](#setting-up-your-workspace)
-    - [Building an Openapi Spec](#building-an-openapi-spec)  
     - [Smithy Libraries and Common models](#smithy-libraries-and-common-models)
-    - [From Smithy Model to Generated Code](#from-smithy-model-to-generated-code)
-    - [Java Model Codegen [WIP]](#java-model-codegen)
-    - [TypeScript Codegen [WIP]](#typescript-codegen)
 - [Validators](#validators)
     - [Adding Builtin Validators](#adding-built-in-validators)
     - [Making A custom Validator](#making-a-custom-validator)
 - [Provided Build Rules](#provided-build-rules)
     - [smithy_source](#smithy_source)
-    - [smithy_openapi](#smithy_openapi)
     - [smithy_library](#smithy_library)
-    - [smithy_java_models](#smithy_java_models)
 
 
 ## Getting Started 

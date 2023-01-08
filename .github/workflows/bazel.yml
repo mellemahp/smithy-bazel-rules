@@ -9,7 +9,7 @@ jobs:
       - name: Setup bazel
         uses: jwlawson/actions-setup-bazel@v1
         with:
-          bazel-version: "5.3.2"
+          bazel-version: "6.0.0"
       - name: Build all test targets
         run: bazel build //test:all
       - name: Build Release tar
@@ -21,4 +21,4 @@ jobs:
           body: "Automatic release for ${{ github.sha }}"
           token: ${{ secrets.GITHUB_TOKEN }}
           commit: ${{ github.sha }}
-          tag: 2.1.1
+          tag: 2.2.0

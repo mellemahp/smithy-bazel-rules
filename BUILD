@@ -11,17 +11,10 @@ pkg_tar(
         "//smithy:common.bzl",
         "//smithy:deps.bzl",
         "//smithy:smithy.bzl",
-        # Openapi build
-        "//smithy/openapi:BUILD",
-        "//smithy/openapi:openapi.bzl",
         # Library and source projections
         "//smithy/base:BUILD",
         "//smithy/base:library.bzl",
         "//smithy/base:source_projection.bzl",
-        # Codegen
-        "//smithy/codegen:BUILD",
-        "//smithy/codegen:java.bzl",
-        "//smithy/codegen:typescript.bzl",
         # Validation
         "//smithy/validation:BUILD",
         # Validators
@@ -29,7 +22,5 @@ pkg_tar(
         # AST Extraction
         "//smithy/ast:BUILD",
         "//smithy/ast:ast.bzl"
-    ],
-    extension = "tar.gz",
-    strip_prefix = "./io_bazel_rules_smithy",
+    ]
 )
